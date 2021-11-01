@@ -1,12 +1,14 @@
 const express = require("express");
 
 const categoriesRouter = require("./Router/categories.router");
+const reviewsRouter = require("./Router/reviews.router");
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/api/categories", categoriesRouter);
+app.use("/api/reviews", reviewsRouter);
 
 
 
