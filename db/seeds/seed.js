@@ -33,8 +33,8 @@ const seed = (data) => {
       designer VARCHAR NOT NULL,
       review_img_url VARCHAR NOT NULL DEFAULT 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg',
       votes INT NOT NULL DEFAULT 0,
-      category VARCHAR REFERENCES categories(slug),
-      owner VARCHAR REFERENCES users(username),
+      category VARCHAR NOT NULL REFERENCES categories(slug),
+      owner VARCHAR NOT NULL REFERENCES users(username),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     `)
@@ -43,7 +43,7 @@ const seed = (data) => {
 db.query(`
   CREATE TABLE comments (
     comment_id SERIAL PRIMARY KEY,
-    author VARCHAR REFERENCES users(username),
+    author VARCHAR NOT NULL REFERENCES users(username),
     review_id INT REFERENCES reviews(review_id),
     votes INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
