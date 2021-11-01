@@ -1,10 +1,12 @@
 const express = require("express");
 
+const categoriesRouter = require("./Router/categories.router");
+
 const app = express();
 
 app.use(express.json());
 
-
+app.use("/api/categories", categoriesRouter);
 
 
 

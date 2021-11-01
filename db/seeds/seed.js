@@ -1,13 +1,6 @@
 const db = require("../connection");
 const format = require("pg-format");
 
-const ENV = process.env.NODE_ENV || "development";
-const categories = require(`../data/${ENV}-data/categories`);
-const comments = require(`../data/${ENV}-data/comments`);
-const reviews = require(`../data/${ENV}-data/reviews`);
-const users = require(`../data/${ENV}-data/users`);
-
-
 const seed = (data) => {
   const { categoryData, commentData, reviewData, userData } = data;
   return db
@@ -66,7 +59,7 @@ db.query(`
     VALUES %L
     RETURNING *;
     `,
-    categories.map((category) => [category.slug, category.description])
+    categoryData.map((category) => [category.slug, category.description])
   );
   return db.query(categoriesString);
 })
@@ -78,7 +71,7 @@ db.query(`
     VALUES %L
     RETURNING *;
     `,
-    users.map((user) => [user.username, user.avatar_url, user.name])
+    userData.map((user) => [user.username, user.avatar_url, user.name])
   );
   return db.query(usersString);
 })
@@ -89,7 +82,7 @@ db.query(`
       (title, review_body, designer, review_img_url, votes, category, owner, created_at)
     VALUES %L
     `,
-    reviews.map(
+    reviewData.map(
       ({title, review_body, designer, review_img_url, votes, category, owner, created_at}) => [
         title,
         review_body,
@@ -111,7 +104,7 @@ db.query(`
       (author, review_id, votes, created_at, body)
     VALUES %L
     `,
-    comments.map(
+    commentData.map(
       ({author, review_id, votes, created_at, body}) => [
         author,
         review_id,
