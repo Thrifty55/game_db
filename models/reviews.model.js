@@ -117,6 +117,5 @@ exports.selectAllReviews = async (
 //         }
 //       });
 //   }
-//   console.log(rows)
 //   return rows;
 // });

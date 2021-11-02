@@ -4,28 +4,28 @@ const format = require("pg-format");
 const seed = (data) => {
   const { categoryData, commentData, reviewData, userData } = data;
   return db
-  .query(`DROP TABLE IF EXISTS comments;`)
-  .then(() => db.query(`DROP TABLE IF EXISTS reviews;`))
-  .then(() => db.query(`DROP TABLE IF EXISTS users;`))
-  .then(() => db.query(`DROP TABLE IF EXISTS categories;`))
-  .then(() =>
-    db.query(`
+    .query(`DROP TABLE IF EXISTS comments;`)
+    .then(() => db.query(`DROP TABLE IF EXISTS reviews;`))
+    .then(() => db.query(`DROP TABLE IF EXISTS users;`))
+    .then(() => db.query(`DROP TABLE IF EXISTS categories;`))
+    .then(() =>
+      db.query(`
     CREATE TABLE categories (
       slug VARCHAR PRIMARY KEY,
       description VARCHAR NOT NULL
     );`)
-  )
-  .then(() =>
-    db.query(`
+    )
+    .then(() =>
+      db.query(`
       CREATE TABLE users (
         username VARCHAR PRIMARY KEY,
         avatar_url VARCHAR NOT NULL,
         name VARCHAR(255) NOT NULL
       );
       `)
-  )
-  .then(() =>
-  db.query(`
+    )
+    .then(() =>
+      db.query(`
     CREATE TABLE reviews (
       review_id SERIAL PRIMARY KEY,
       title VARCHAR NOT NULL,
@@ -38,9 +38,9 @@ const seed = (data) => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     `)
-)
-.then(() =>
-db.query(`
+    )
+    .then(() =>
+      db.query(`
   CREATE TABLE comments (
     comment_id SERIAL PRIMARY KEY,
     author VARCHAR NOT NULL REFERENCES users(username),
@@ -50,72 +50,79 @@ db.query(`
     body VARCHAR NOT NULL
   );
   `)
-)
-.then(() => {
-  const categoriesString = format(
-    `
+    )
+    .then(() => {
+      const categoriesString = format(
+        `
     INSERT INTO categories
       (slug, description)
     VALUES %L
     RETURNING *;
     `,
-    categoryData.map((category) => [category.slug, category.description])
-  );
-  return db.query(categoriesString);
-})
-.then(() => {
-  const usersString = format(
-    `
+        categoryData.map((category) => [category.slug, category.description])
+      );
+      return db.query(categoriesString);
+    })
+    .then(() => {
+      const usersString = format(
+        `
     INSERT INTO users
       (username, avatar_url, name)
     VALUES %L
     RETURNING *;
     `,
-    userData.map((user) => [user.username, user.avatar_url, user.name])
-  );
-  return db.query(usersString);
-})
-.then(() => {
-  const reviewsString = format(
-    `
+        userData.map((user) => [user.username, user.avatar_url, user.name])
+      );
+      return db.query(usersString);
+    })
+    .then(() => {
+      const reviewsString = format(
+        `
     INSERT INTO reviews
       (title, review_body, designer, review_img_url, votes, category, owner, created_at)
     VALUES %L
     `,
-    reviewData.map(
-      ({title, review_body, designer, review_img_url, votes, category, owner, created_at}) => [
-        title,
-        review_body,
-        designer,
-        review_img_url,
-        votes,
-        category,
-        owner,
-        created_at
-      ]
-    )
-  );
-  return db.query(reviewsString);
-})
-.then(() => {
-  const commentsString = format(
-    `
+        reviewData.map(
+          ({
+            title,
+            review_body,
+            designer,
+            review_img_url,
+            votes,
+            category,
+            owner,
+            created_at,
+          }) => [
+            title,
+            review_body,
+            designer,
+            review_img_url,
+            votes,
+            category,
+            owner,
+            created_at,
+          ]
+        )
+      );
+      return db.query(reviewsString);
+    })
+    .then(() => {
+      const commentsString = format(
+        `
     INSERT INTO comments
       (author, review_id, votes, created_at, body)
     VALUES %L
     `,
-    commentData.map(
-      ({author, review_id, votes, created_at, body}) => [
-        author,
-        review_id,
-        votes,
-        created_at,
-        body
-      ]
-    )
-  );
-  return db.query(commentsString);
-});
+        commentData.map(({ author, review_id, votes, created_at, body }) => [
+          author,
+          review_id,
+          votes,
+          created_at,
+          body,
+        ])
+      );
+      return db.query(commentsString);
+    });
 };
 
 module.exports = seed;

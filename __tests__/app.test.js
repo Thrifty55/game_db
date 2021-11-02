@@ -260,28 +260,27 @@ describe("/api/reviews endpoint", () => {
 
 describe("/api/reviews/:review_id/comments", () => {
   describe("GET", () => {
-      test("status 404 invalid review_id", () => {
-          return request(app)
-            .get("/api/reviews/999/comments")
-            .expect(404)
-            .then(({ body: { err } }) => {
-              expect(err).toEqual("Review does not exist with that ID");
-            });
+    test("status 404 invalid review_id", () => {
+      return request(app)
+        .get("/api/reviews/999/comments")
+        .expect(404)
+        .then(({ body: { err } }) => {
+          expect(err).toEqual("Review does not exist with that ID");
         });
-        test("status 404 invalid review_id", () => {
-          return request(app)
-            .get("/api/reviews/abc/comments")
-            .expect(404)
-            .then(({ body: { err } }) => {
-              expect(err).toEqual("Review does not exist with that ID");
-            });
+    });
+    test("status 404 invalid review_id", () => {
+      return request(app)
+        .get("/api/reviews/abc/comments")
+        .expect(404)
+        .then(({ body: { err } }) => {
+          expect(err).toEqual("Review does not exist with that ID");
         });
+    });
     test("status 200 returns comment for that specific review id", () => {
       return request(app)
         .get("/api/reviews/2/comments")
         .expect(200)
         .then(({ body: { comment } }) => {
-          console.log(comment)
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
             votes: expect.any(Number),
@@ -289,6 +288,50 @@ describe("/api/reviews/:review_id/comments", () => {
             author: expect.any(String),
             body: expect.any(String),
           });
+        });
+    });
+  });
+  describe("POST", () => {
+    test("status 201 created comment", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send({
+          author: "philippaclaire9",
+          body: "newBody",
+        })
+        .expect(201)
+        .then(({ body: { comment } }) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            review_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          });
+        });
+    });
+    test("status 400 missing fields", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send({
+          author: "philippaclaire9",
+        })
+        .expect(400)
+        .then(({ body: { err } }) => {
+          expect(err).toEqual("body is required and must be of type string");
+        });
+    });
+    test("status 400 field has wrong type", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send({
+          author: "philippaclaire9",
+          body: 5,
+        })
+        .expect(400)
+        .then(({ body: { err } }) => {
+          expect(err).toEqual("body is required and must be of type string");
         });
     });
   });
