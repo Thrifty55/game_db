@@ -83,7 +83,7 @@ exports.selectAllReviews = async (
   `;
   const queryParams = [];
   if (category) {
-    queryString += `WHERE category = $1\n`;
+    queryString += `WHERE category = $1`;
     queryParams.push(String(category));
   }
   queryString += `ORDER BY ${sortBy} ${order}`;

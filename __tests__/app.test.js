@@ -257,3 +257,39 @@ describe("/api/reviews endpoint", () => {
     });
   });
 });
+
+describe("/api/reviews/:review_id/comments", () => {
+  describe("GET", () => {
+      test("status 404 invalid review_id", () => {
+          return request(app)
+            .get("/api/reviews/999/comments")
+            .expect(404)
+            .then(({ body: { err } }) => {
+              expect(err).toEqual("Review does not exist with that ID");
+            });
+        });
+        test("status 404 invalid review_id", () => {
+          return request(app)
+            .get("/api/reviews/abc/comments")
+            .expect(404)
+            .then(({ body: { err } }) => {
+              expect(err).toEqual("Review does not exist with that ID");
+            });
+        });
+    test("status 200 returns comment for that specific review id", () => {
+      return request(app)
+        .get("/api/reviews/2/comments")
+        .expect(200)
+        .then(({ body: { comment } }) => {
+          console.log(comment)
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          });
+        });
+    });
+  });
+});
